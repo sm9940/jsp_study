@@ -1,6 +1,8 @@
 package ch04.product;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 //model(모델):
@@ -20,4 +22,15 @@ public class ProductService {
 		p = new Product("103","엘스듀얼폰 12","엘스전자",1500000,"2021.3.3");
 		products.put("103", p);
 	}
+	
+	//상품리스트를 리턴해주는 메소드
+	public List<Product> findAll(){
+		//product 객체가 저장된 hashmap ->arrayList로 변경후 리턴
+		return new ArrayList<>(products.values()); //product 객체가 담긴 ArrayList 리턴
+	};
+	
+	//상품코드로 상품 객체를 리턴해주는 메소드
+	public Product find(String id) {
+		return products.get(id); //상품코드(key값)을 이용해서 product 객체를 받아온다.
+	};
 }

@@ -8,14 +8,14 @@
 <title>Insert title here</title>
 </head>
 <body>
- <h2>상품 목록</h2>
+ <h2>상품정보 조회</h2>
  <hr>
- <table border="1">
- <tr>
- <th>번호</th>
- <th>상품명</th>
- <th>가격</th>
- </tr>
- </table>
+ <ul>
+ 	<li>상품코드: ${p.id}</li>
+ 	<li>상품명: ${p.name}</li>
+ 	<li>제조사: ${p.maker}</li>
+ 	<li>가격 : ${p.price}</li>
+ 	<li>등록일: ${p.date}</li>
+ </ul>
 </body>
 </html>

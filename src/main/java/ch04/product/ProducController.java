@@ -1,41 +1,67 @@
 package ch04.product;
 
 import java.io.IOException;
+
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Servlet implementation class ProducController
- */
-@WebServlet("/ProducController")
+//controller(컨트롤러)
+	//1.view로부터 request를 받는다.
+	//2. model한테 데이터를 전달해 요청(조회,수정,삭제)한다.
+	//3. model로부터 전달받은 데이터를 가공해 view에 forward 해준다.
+@WebServlet("/pcontrol")
 public class ProducController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ProducController() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	ProductService service;
+    
+	//init: 서블릿의 초기화 담당. 톰캣을 실행 후 서블릿 객체가 만들어질때 딱 1번만 실행
+	//init() 메소드 안의 코드는 딱 한번만 실행이 된다.
+	//ProductService() 객체를 딱 한번만 생성한다(여러번 생성하지 X)
+	@Override
+	public void init(ServletConfig config) throws ServletException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		super.init(config); //서블릿 초기화
+		service = new ProductService();
 	}
+	//service: 모든 request를 받아 doGet() 메소드를 실행할지 doPost() 메소드를 실행할지 정해준다.
+	//따라서 모든 request는 service()메소드에서 우선적으로 처리 가능
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+	@Override
+	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String action = req.getParameter("action"); //두번째 페이지 request할때는 action값이 존재
+		String view = "";
+		
+		if(action == null) { //최초로 페이지 접근시 실행되는 부분
+			//product객체가 들어있는 ArrayList를 request 객체에 넣어줌
+			getServletContext()
+			.getRequestDispatcher("/pcontrol?action=list")
+			.forward(req, resp);
+			
+		} else {
+			switch (action) {
+			case "list": view = list(req,resp); break;
+			case "info": view = info(req,resp); break;
+		}
+			getServletContext()
+			.getRequestDispatcher("/ch04/product/"+view)
+			.forward(req, resp);
+		}
+
+
 	}
-
+	private String list(HttpServletRequest req, HttpServletResponse resp) {
+		req.setAttribute("products", service.findAll()); 
+	
+		return "productList.jsp";
+	}
+	
+	private String info(HttpServletRequest req, HttpServletResponse resp) {
+		String id = req.getParameter("id");
+		req.setAttribute("p", service.find(id));
+		return "productInfo.jsp";
+}
 }
